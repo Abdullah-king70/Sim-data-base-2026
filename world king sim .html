@@ -1,0 +1,655 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORLD KING DB - SIM Info Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0.6;
+            box-shadow: 0 0 10px #00d4ff;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,212,255,0.03) 50%,
+                rgba(0,212,255,0.03)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* Logo Section */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .logo-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid #00d4ff;
+            box-shadow: 
+                0 0 20px #00d4ff,
+                0 0 40px #00d4ff,
+                0 0 60px #0080ff;
+            margin-bottom: 15px;
+            object-fit: cover;
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .main-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 
+                0 0 10px #00d4ff,
+                0 0 20px #00d4ff,
+                0 0 30px #0080ff,
+                0 0 40px #0080ff;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00d4ff, #0080ff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #00d4ff;
+            font-size: 0.9em;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px #00d4ff;
+            margin-bottom: 30px;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-box {
+            width: 100%;
+            padding: 18px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            color: #00d4ff;
+            font-size: 1.2em;
+            text-align: center;
+            letter-spacing: 2px;
+            outline: none;
+            box-shadow: 
+                0 0 20px rgba(0, 212, 255, 0.3),
+                inset 0 0 20px rgba(0, 212, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .input-box::placeholder {
+            color: rgba(0, 212, 255, 0.5);
+        }
+
+        .input-box:focus {
+            box-shadow: 
+                0 0 30px rgba(0, 212, 255, 0.5),
+                inset 0 0 30px rgba(0, 212, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* Execute Button */
+        .execute-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #00d4ff, #0080ff);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 1.1em;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 
+                0 0 20px rgba(0, 212, 255, 0.5),
+                0 0 40px rgba(0, 212, 255, 0.3);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .execute-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 0 30px rgba(0, 212, 255, 0.8),
+                0 0 60px rgba(0, 212, 255, 0.5);
+        }
+
+        .execute-btn:active {
+            transform: translateY(0);
+        }
+
+        .execute-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .execute-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Terminal Window */
+        .terminal {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00d4ff;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 0 30px rgba(0, 212, 255, 0.3),
+                inset 0 0 30px rgba(0, 212, 255, 0.05);
+        }
+
+        .terminal-header {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #00d4ff;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .terminal-title {
+            color: #00d4ff;
+            font-size: 0.8em;
+            letter-spacing: 2px;
+        }
+
+        .terminal-body {
+            padding: 20px;
+            min-height: 350px;
+            color: #00ff00;
+            font-size: 0.95em;
+            line-height: 1.8;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            margin-bottom: 5px;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background: #00ff00;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Data Display Styles */
+        .data-section {
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 3px solid #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .data-label {
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        .data-value {
+            color: #fff;
+            margin-left: 10px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .action-buttons.show {
+            opacity: 1;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .action-btn:hover {
+            background: #00d4ff;
+            color: #000;
+            box-shadow: 0 0 20px #00d4ff;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            margin-top: 25px;
+            padding: 15px;
+            border: 2px dashed #ff9500;
+            border-radius: 8px;
+            background: rgba(255, 149, 0, 0.1);
+            text-align: center;
+        }
+
+        .warning-text {
+            color: #ff9500;
+            font-size: 0.8em;
+            line-height: 1.6;
+            text-shadow: 0 0 10px rgba(255, 149, 0, 0.5);
+        }
+
+        /* Powered By Section */
+        .powered-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .powered-text {
+            color: #00d4ff;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .powered-logo {
+            font-size: 1.3em;
+            color: #00d4ff;
+            text-shadow: 0 0 10px #00d4ff;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        /* Protect Button (WhatsApp Link) */
+        .protect-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #25d366, #128c7e);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 
+                0 0 20px rgba(37, 211, 102, 0.5),
+                0 0 40px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s;
+            z-index: 100;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(37, 211, 102, 0.5), 0 0 40px rgba(37, 211, 102, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(37, 211, 102, 0.8), 0 0 60px rgba(37, 211, 102, 0.5); }
+        }
+
+        .protect-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(37, 211, 102, 0.8);
+        }
+
+        .protect-icon {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #128c7e;
+        }
+
+        /* Success/Error Messages */
+        .success-msg {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .error-msg {
+            color: #ff3333;
+            text-shadow: 0 0 10px #ff3333;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 212, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #00d4ff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .main-title {
+                font-size: 1.8em;
+                letter-spacing: 4px;
+            }
+            .logo-img {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff00ff;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 #00ffff;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim2 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 85px, 0); }
+            20% { clip: rect(63px, 9999px, 130px, 0); }
+            40% { clip: rect(25px, 9999px, 15px, 0); }
+            60% { clip: rect(88px, 9999px, 95px, 0); }
+            80% { clip: rect(45px, 9999px, 60px, 0); }
+            100% { clip: rect(15px, 9999px, 110px, 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            20% { clip: rect(20px, 9999px, 60px, 0); }
+            40% { clip: rect(90px, 9999px, 120px, 0); }
+            60% { clip: rect(35px, 9999px, 75px, 0); }
+            80% { clip: rect(70px, 9999px, 130px, 0); }
+            100% { clip: rect(5px, 9999px, 50px, 0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="particles" id="particles"></div>
+    <div class="scanlines"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <img src="https://files.catbox.moe/d0napt.jpg" alt="WORLD KING DB" class="logo-img">
+            <h1 class="main-title glitch" data-text="WORLD KING DB">WORLD KING DB</h1>
+            <p class="subtitle">ADVANCED SIM INTELLIGENCE SYSTEM</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <input type="text" class="input-box" id="phoneInput" placeholder="[ ENTER TARGET NUMBER 923XXXXXXXX ]" maxlength="12">
+            <button class="execute-btn" onclick="startExtraction()">⚡ EXECUTE EXTRACTION ⚡</button>
+        </div>
+
+        <!-- Terminal Window -->
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                </div>
+                <span class="terminal-title">ENCRYPTED_SESSION_STABLE</span>
+            </div>
+            <div class="terminal-body" id="terminalBody">
+                <div class="terminal-line">> SYSTEM: ONLINE</div>
+                <div class="terminal-line">> READY FOR COMMAND...<span class="cursor"></span></div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons" id="actionButtons">
+            <button class="action-btn" onclick="copyData()">📋 COPY DATA</button>
+            <button class="action-btn" onclick="downloadPDF()">📥 DOWNLOAD PDF</button>
+        </div>
+
+        <!-- Warning Box -->
+        <div class="warning-box">
+            <p class="warning-text">
+                ⚠️ WARNING: THIS TOOL IS FOR EDUCATIONAL PURPOSES ONLY.<br>
+                DATA PRIVACY LAWS APPLY. POWERED BY WORLD KING ELITE.
+            </p>
+        </div>
+
+        <!-- Powered By -->
+        <div class="powered-section">
+            <p class="powered-text">POWERED BY</p>
+            <p class="powered-logo">⚡ WORLD KING DB ⚡</p>
+        </div>
+    </div>
+
+    <!-- WhatsApp Protect Button -->
+    <a href="https://whatsapp.com/channel/0029Vb8UIUo1Hsq5QgWwsw3T" target="_blank" class="protect-btn">
+        <span class="protect-icon">🛡️</span>
+        <span>PROTECT US</span>
+    </a>
+
+    <script>
+        // Create Particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Demo Database - Random Data Generator
+        const demoDatabase = {
+            generateData: function(phone) {
+                const names = ["AHMED KHAN", "MUHAMMAD ALI", "FATIMA BIBI", "SYED HASSAN", "ZAINAB KHAN", "OMAR FAROOQ", "AISHA SIDDIQUI", "BILAL AHMED"];
+                const cities = ["KARACHI", "LAHORE", "ISLAMABAD", "RAWALPINDI", "FAISALABAD", "MULTAN", "PESHAWAR", "QUETTA"];
+                const networks = ["JAZZ", "TELENOR", "ZONG", "UFONE", "SCOM"];
+                const cnicPatterns = ["35201", "35202", "42101", "42201", "35401"];
+                
+                // Generate consistent fake data based on phone number
+                const seed = phone.split('').reduce((a, b) => a + parseInt(b), 0);
+                const nameIndex = seed % names.length;
+                const cityIndex = (seed * 2) % cities.length;
+                const networkIndex = (seed * 3) % networks.length;
+                const cnicStart = cnicPatterns[seed % cnicPatterns.length];
+                
+                return {
+                    success: true,
+                    phone: phone,
+                    name: names[nameIndex],
+                    cnic: cnicStart + "-" + Math.floor(1000000 + Math.random() * 8999999) + "-" + Math.floor(1 + Math.random() * 9),
+                    address: "HOUSE NO " + Math.floor(1 + Math.random() * 500) + ", STREET " + Math.floor(1 + Math.random() * 20) + ", " + cities[cityIndex],
+                    city: cities[cityIndex],
+                    network: networks[networkIndex],
+                    sims: Math.floor(1 + Math.random() * 5),
+                    status: "ACTIVE",
+                    registration: "20" + Math.floor(10 + Math.random() * 14) + "-" + Math.floor(1 + Math.random() * 12) + "-" + Math.floor(1 + Math.random() * 28),
+                    imei: "35" + Math.floor(1000000000000 + Math.random() * 8999999999999)
+                };
+            }
+        };
+
+        // Extraction Process
+        const steps = [
+            "> INITIALIZING ATTACK VECTOR...",
+            "> BYPASSING FIREWALL GATEWAY...",
+            "> CONNECTING TO PTA DATABASE...",
+            "> EXTRACTING PACKETS FROM SECTOR 7...",
+            "> DECRYPTING SSL DATA STREAMS...",
+            "> REMOVING SECURITY PROTOCOLS...",
+            "> INJECTING CLEAN FORMATTER...",
+            "> ACCESS GRANTED: DATA STREAM READY."
+        ];
+
+        function startExtraction() {
+            const phone = document.getElementById('phoneInput').value;
+            const terminal = document.getElementById('terminalBody');
+            const actionButtons = document.getElementById('actionButtons');
+
+            if (!phone || phone.length < 10) {
